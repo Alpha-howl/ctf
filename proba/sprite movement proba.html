@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Sprite movement proba</title>
+	<script src="https://yoannmoinet.github.io/nipplejs/javascripts/nipplejs.js"></script>
+	<style type="text/css">
+		html {
+			padding: 0;
+			height: 100%;
+			overflow-x: hidden;
+		}
+		body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			min-height: 100%;
+			background-color: black;
+
+			display: flex;
+			justify-content: center;
+			place-items: center;
+		}
+		#canvas1 {
+			border-radius: 50%;
+			background-image: radial-gradient(circle, rgba(255,228,130,1) 0%, 
+				rgba(196,167,109,1) 11%, 
+				rgba(117,99,67,1) 25%, 
+				rgba(83,66,47,1) 46%, 
+				rgba(38,30,22,1) 62%, 
+				rgba(18,14,10,1) 82%, 
+				rgba(0,0,0,1) 100%);
+			background-color: #221708;
+			box-shadow: 0 0 30px 15px #221708;
+		}
+	</style>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.0.min.js"></script> -->
+</head>
+<body>
+<div class="joystick-base" touch-action="none">
+    <div class="joystick-shaft" touch-action="none"></div>
+</div>
+<canvas id="canvas1"></canvas>
+
+<script type="text/javascript">
+
+const joystick = nipplejs.create({
+	mode: "semi",
+    size: 100,
+    color: "#597451",
+    dynamicPage: true,
+    restOpacity: .3,
+    catchDistance: 100
+});
+joystick.on("move", (_, data) => {
+	Object.keys(pressedArrowKeys).forEach(key => {
+		pressedArrowKeys[key] = false;
+	});
+
+	const angle = data.angle.degree;
+
+	if(angle < 245 && angle > 115) {
+		pressedArrowKeys.left = true
+	}
+	else if(angle < 65 || angle > 295) {
+		pressedArrowKeys.right = true;
+	}
+
+	if(angle < 155 && angle > 25) {
+		pressedArrowKeys.up = true;
+	}
+	else if(angle < 335 && angle > 205) {
+		pressedArrowKeys.down = true;
+	}
+});
+joystick.on("end", () => {
+	Object.keys(pressedArrowKeys).forEach(key => {
+		pressedArrowKeys[key] = false;
+	});
+});
+
+
+
+const canvas = document.getElementById("canvas1");
+
+let MAZE_BLOCKS;
+
+const GET_MAZE_BLOCKS = async () => {
+	if(MAZE_BLOCKS) {return MAZE_BLOCKS;}
+	const res = await fetch("../game/resources/blocks/blocks-data.json");
+	MAZE_BLOCKS = await res.json();
+	return MAZE_BLOCKS;
+}
+
+const ctx = canvas.getContext("2d");
+const getGrid = async () => {
+	if(this.fetched) {
+		return this.grid;
+	}
+	
+	const response = await fetch("mazedata.json");
+	const json = await response.json();
+	this.grid = json;
+	this.fetched = true;
+	return json;
+}
+
+
+const VISION_RADIUS = 3;
+
+const displayedCols = 2*VISION_RADIUS+1;
+const cellSize = calculateCellDimensions(displayedCols, displayedCols);
+
+const hitboxData = {
+	width: .22, // this is in terms of proportion of cellSize
+	height: .22
+}
+
+
+canvas.width = displayedCols*cellSize;
+canvas.height = displayedCols*cellSize;
+
+
+
+
+
+function randomDfs(cols, rows, probToVisitCellAgain=0.5) {
+	// first, generate the initial grid of cells with all walls intact:
+	// number of cells = resolution of maze = rows x columns
+	const grid = new Array(cols*rows);
+	// inject those cells into the grid array now
+	for (let i = 0; i < grid.length; i++) {
+		// find the current cell's row and column to instantiate it
+		const row = Math.floor(i / cols);
+		const col = i % cols;
+		grid[i] = new Cell(/*x*/col, /*y*/row, /*index in grid*/i);
+	}
+
+	for (let i = 0; i < grid.length; i++) {
+		// call the initialiseNeighbours method for each cell
+		grid[i].initialiseNeighbours(grid, cols, rows);
+	}
+
+
+	// define stack of cells to be processed & place
+	// the initial cell in it to start with
+	const cellsToProcessStack = [grid[0]];
+
+
+	while (cellsToProcessStack.length != 0) {
+		// pop the last cell from the stack & call it the current cell
+		const currentCell = cellsToProcessStack.splice(-1)[0];
+
+		if (Math.random() > probToVisitCellAgain) {
+			currentCell.markAsVisited();
+		}
+
+		// check to see if cell has unvisited neighbours
+		// by using a linear search and a flag
+		let hasUnvisitedNeighbours = false;
+		const unvisitedNeighbours = [];
+		const allNeighbours = currentCell.getNeighbours();
+		for (let i = 0; i < allNeighbours.length; i++) {
+			if(!allNeighbours[i].isVisited()) {
+				hasUnvisitedNeighbours = true;
+				unvisitedNeighbours.push(allNeighbours[i]);
+			}
+		}
+
+
+		if (hasUnvisitedNeighbours) {
+			// as in the structured English description, we have to do the following:
+			// if there are unvisited neighbours, push the cell onto the stack
+			// and remove the wall between that cell and one of the unvisited neighbours
+
+			cellsToProcessStack.push(currentCell);
+			const rand = Math.floor(Math.random()*unvisitedNeighbours.length);
+			const chosenNeighbour = unvisitedNeighbours[rand];
+
+			// now find the location of the neighbour relative to the current cell
+			// and remove the walls between the neighbour and the current cell
+			const indexDifference = currentCell.getIndex() - chosenNeighbour.getIndex();
+			if(indexDifference === -cols) {
+				// the neighbour is directly downwards from current cell, so
+				// remove top wall of neighbour and bottom wall of current cell
+				grid[chosenNeighbour.getIndex()].removeWall(0);
+				grid[currentCell.getIndex()].removeWall(2);
+			}
+			else if(indexDifference === cols) {
+				// neighbour is directly upwards from current cell, so
+				// remove bottom wall of neighbour and top wall of current cell
+				grid[chosenNeighbour.getIndex()].removeWall(2);
+				grid[currentCell.getIndex()].removeWall(0);
+			}
+			else if(indexDifference === -1) {
+				// neighbour is to the right -> of the current cell
+				// remove left wall of neighbour and right wall of current
+				grid[chosenNeighbour.getIndex()].removeWall(3);
+				grid[currentCell.getIndex()].removeWall(1);
+			}
+			else {
+				// indexDifference = 1, and the neighbour is to
+				// the left <- of the current cell
+				grid[chosenNeighbour.getIndex()].removeWall(1);
+				grid[currentCell.getIndex()].removeWall(3);
+			}
+
+			// now push neighbour to stack so it is 
+			// also processed like the current cell just was
+			cellsToProcessStack.push(grid[chosenNeighbour.getIndex()]);
+
+		} else {
+			// has no unvisited neigh.
+			// do nothing, all paths have alrady been carved around
+			// this cell - so no need for new paths
+		} // end if
+	} // end while
+	// finally, return the maze data (the grid array)
+	return grid;
+}
+class Cell {
+	#x;
+	#y;
+	#index;
+	#neighbours = [];
+	#visited = false;
+	#walls = [true, true, true, true];
+
+	constructor(paramX, paramY, paramIndex) {
+		this.#x = paramX;
+		this.#y = paramY;
+		this.#index = paramIndex;
+	}
+
+
+	getY() {
+		return this.#y;
+	}
+	getX() {
+		return this.#x;
+	}
+	getIndex() {
+		return this.#index;
+	}
+	getNeighbours() {
+		return this.#neighbours;
+	}
+	isVisited() {
+		return this.#visited;
+	}
+	markAsVisited() {
+		this.#visited = true;
+	}
+	getWalls() {
+		return this.#walls;
+	}
+	removeWall(wallIndex) {
+		if(wallIndex > 3 || wallIndex < 0) {
+			throw "Error - wallIndex out of range (search 4354532)";
+			return;
+		}
+		this.#walls[wallIndex] = false;
+	}
+
+	initialiseNeighbours(grid, cols, rows) {
+		if(this.#neighbours.length != 0) {
+			return;
+		}
+
+		if(this.#x > 0) {
+			const leftNeighIndex = this.#index-1;
+			this.#neighbours.push(grid[leftNeighIndex]);
+		}
+		if(this.#y > 0) {
+			const topNeighIndex = this.#index - cols;
+			this.#neighbours.push(grid[topNeighIndex]);
+		}
+		if(this.#x < cols-1) {
+			const rightNeighIndex = this.#index + 1;
+			this.#neighbours.push(grid[rightNeighIndex]);
+		}
+		if(this.#y < rows-1) {
+			const bottomNeighIndex = this.#index + cols;
+			this.#neighbours.push(grid[bottomNeighIndex]);
+		}
+	}
+
+	toJSO() {
+        return {
+            x: this.#x,
+            y: this.#y,
+            index: this.#index,
+            neighbours: [], // cannot compute this as it 
+            // would result in a cyclic object loop (client can just re-init neighbours)
+            visited: this.#visited,
+            walls: this.#walls
+        };
+    }
+}
+function convertJsoCellToClassCell(jsoCell) {
+	const cellClassObk = new Cell(jsoCell.x, jsoCell.y, jsoCell.index);
+    if(jsoCell.visited) {
+    	cellClassObk.markAsVisited();
+    }
+    jsoCell.walls.forEach((wall, index) => {
+    	if(wall === false) {
+    		cellClassObk.removeWall(index);
+    	}
+    });
+
+    return cellClassObk;
+}
+function calculateCellDimensions(rows, cols) {
+	const height = Math.floor(document.body.clientHeight / rows);
+	const width = Math.floor(document.body.clientWidth / cols);
+	return Math.min(height-1, width-1);
+}
+async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
+	let cellIndex = 0;
+	let gridLength = grid.length;
+	for ( ; cellIndex < gridLength; cellIndex++) {
+		const currentCell = grid[cellIndex];
+		const walls = currentCell.getWalls();
+
+		let wallIndex = 0;
+		for ( ; wallIndex < walls.length; wallIndex++) {
+			const currentWall = walls[wallIndex];
+			// dblWall means that this wall will be drawn by another cell
+			// dblWall true if cur wall is bottom wall & cur cell is not along
+			// the bottom row, or if cur wall is right wall & cur cell is not
+			// along the right-most col
+			const dblWall = wallIndex === 2 && currentCell.getY() != cols-1 ||
+							wallIndex === 1 && currentCell.getX() != rows-1;
+			if (currentWall === false || dblWall) {
+				// if currentWall is false there isn't a wall here
+				continue;
+			}
+
+			// if still running, wall is true
+			// so draw image of wall onto canvas
+
+			// first calculate the starting and ending points
+			let wallStartX = currentCell.getX() * cellSize;
+			let wallStartY = currentCell.getY() * cellSize;
+			
+			let wallEndX = wallStartX;
+			let wallEndY = wallStartY;
+			let wallOrientation;
+			if (wallIndex === 0 || wallIndex === 2) {
+				wallOrientation = "horizontal";
+				// wall is horizontal so make it 
+				// 20px in height (for eg):
+
+				if (wallIndex === 2) {
+					// if the wall is at the bottom side, add one cellSize to the 
+					// vertical coordiantes to shift the wall down
+					wallStartY += cellSize;
+					wallEndY = wallStartY;
+				}
+				wallStartY -= 4;
+				wallEndY += 4;
+
+				// then make it long horizontally 
+				wallEndX += cellSize;
+			} else {
+				wallOrientation = "vertical";
+				// wall is vertical, so make it 
+				// 20px in width (for eg):
+
+				if (wallIndex === 1) {
+					// if the wall is at the right side, add one cellSize to the 
+					// horizontal coordiantes to shift the wall right
+					wallStartX += cellSize;
+					wallEndX = wallStartX;
+				}
+
+				wallStartX -= 4;
+				wallEndX += 4;
+
+				// and make it long vertically
+				wallEndY += cellSize;
+			}
+
+			const scenePosition = {
+				x: canvas.width/2 - playerData.x,
+				y: canvas.height/2 - playerData.y
+			};
+			
+			// now draw the image onto the canvas
+			const dWidth = wallEndX - wallStartX;
+			const dHeight = wallEndY - wallStartY;
+
+			const cachedWallIndex = currentCell.getIndex().toString() + wallIndex.toString();
+
+			if(!cachedImgs["wall-"+cachedWallIndex]?.img) {
+				cachedImgs["wall-"+cachedWallIndex] = {img: new Image()};
+			}
+			const currentWallImg = cachedImgs["wall-" + cachedWallIndex].img;
+			if(!currentWallImg.src) {
+				// set and await load
+				const blocks = MAZE_BLOCKS || await GET_MAZE_BLOCKS();
+				const walls = blocks[wallOrientation+"Walls"];
+				const randWallName = walls[Math.floor(Math.random()*walls.length)];
+				const randSrc = "../game" + blocks[randWallName].src;
+				cachedImgs["wall-"+cachedWallIndex].data = blocks[randWallName];
+				cachedImgs["wall-"+cachedWallIndex].img.src = randSrc;
+				await (() => {
+					return new Promise(loaded => {
+						cachedImgs["wall-"+cachedWallIndex].img.addEventListener("load", loaded);
+					});
+				})();
+			}
+			const curImg = cachedImgs["wall-"+cachedWallIndex];
+			// drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+			ctx.drawImage(
+				curImg.img, 				// image element
+				curImg.data.sheetStartX, 	// starting x on the source
+				curImg.data.sheetStartY, 	// starting y on the source
+				curImg.data.width, 			// width of the source
+				curImg.data.height, 		// height of the source
+				wallStartX+scenePosition.x, // destination x on the canvas
+				wallStartY+scenePosition.y, // destination y on the canvas
+				dWidth, 					// width on the canvas
+				dHeight						// height on the canvas
+			);
+		}
+	}
+}
+const cachedImgs = {};
+
+getGrid().then(jsoGrid => {
+	const cellGrid = grid.map(convertJsoCellToClassCell);
+	cellGrid.forEach((_,i) => cellGrid[i].initialiseNeighbours(cellGrid, 11, 11));
+	Grid = cellGrid;
+	ctx.fillStyle = "#119911";
+	animate();
+});
+
+const amplifier = .06;
+let Grid;
+let logged = 0;
+function animate() {
+
+	const closeWalls = getWallsPlayerWillCollideWith([playerData.x / cellSize, playerData.y / cellSize], Grid, amplifier, 11, hitboxData);
+
+	let friction = 0;
+	if(closeWalls.some(wall => wall===true)) {
+		friction = -0.03;
+	}
+
+	if(pressedArrowKeys.left && !closeWalls[3]) {
+		playerData.x -= (amplifier+friction)*cellSize;
+	}
+	if(pressedArrowKeys.right && !closeWalls[1]) {
+		playerData.x += (amplifier+friction)*cellSize;
+	}
+	if(pressedArrowKeys.up && !closeWalls[0]) {
+		playerData.y -= (amplifier+friction)*cellSize;
+	}
+	if(pressedArrowKeys.down && !closeWalls[2]) {
+		playerData.y += (amplifier+friction)*cellSize;
+	}
+
+	const playerX = Math.floor(playerData.x / cellSize);
+	const playerY = Math.floor(playerData.y / cellSize);
+	const smallGrid = findRadiusAroundPlayer(Grid, playerX, playerY, 11, VISION_RADIUS);
+
+	ctx.clearRect(0,0,canvas.width, canvas.height);
+	displayMaze(smallGrid, ctx, cellSize, playerData, 11, 11);
+	const width = hitboxData.width*cellSize;
+	const height = hitboxData.height*cellSize;
+	ctx.fillRect((canvas.width-width)/2, (canvas.height-height)/2-10, width, height);
+	requestAnimationFrame(animate);
+}
+
+
+const playerData = {
+	x: .5*cellSize,
+	y: .5*cellSize
+}
+
+
+
+function findRadiusAroundPlayer(grid, playerX, playerY, cols, radius) {
+	const sqrRadius = radius*radius;
+	const gridToBeDisplayed = [];
+	for(let i = 0; i < grid.length; i++) {
+		const currentCell = grid[i];
+		//const playerCell = grid[getIndexFromXY(playerX, playerY, cols)];
+
+		const cellX = currentCell.getX();
+		const cellY = currentCell.getY();
+		const pythagSquareDistanceFromPlayer = (playerX - cellX)**2 + (playerY - cellY)**2;
+
+		if(pythagSquareDistanceFromPlayer > sqrRadius+1) {
+			continue;
+		}
+
+		gridToBeDisplayed.push(currentCell);
+
+	}
+
+	return gridToBeDisplayed;
+}
+
+
+
+
+
+const pressedArrowKeys = {};
+
+window.addEventListener("keydown", e => {
+	const keycode = e.keyCode;
+	switch(keycode) {
+		case 37:
+			pressedArrowKeys.left = true;
+			break;
+		case 39:
+			pressedArrowKeys.right = true;
+			break;
+		case 38:
+			pressedArrowKeys.up = true;
+			break;
+		case 40:
+			pressedArrowKeys.down = true;
+			break;
+	}
+});
+
+window.addEventListener("keyup", e => {
+	const keycode = e.keyCode;
+	switch(keycode) {
+		case 37:
+			pressedArrowKeys.left = false;
+			break;
+		case 39:
+			pressedArrowKeys.right = false;
+			break;
+		case 38:
+			pressedArrowKeys.up = false;
+			break;
+		case 40:
+			pressedArrowKeys.down = false;
+			break;
+	}
+});
+
+
+
+
+
+
+function getIndexFromXY(x, y, cols) {
+	return y*cols + x;
+}
+
+
+
+function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData) {
+	const position = {
+		x: coords[0],
+		y: coords[1]
+	};
+
+	const row = Math.floor(position.y);
+	const col = Math.floor(position.x);
+
+	const positionInCell = {
+		x: position.x-col,
+		y: position.y-row
+	};
+
+
+
+
+	const cellObject = grid[getIndexFromXY(col, row, cols)];
+	const currentCellWalls = cellObject.getWalls();
+
+	let wallsThePlayerIsCloseTo = Array(4).fill(false); // in format [top, right, bottom, left]
+	const sidesThePlayerIsCloseTo = [];
+
+	// if-else clause for left&right
+	if(positionInCell.x - hitboxData.width/2 - amplifier < 0) {
+		// player is close to left edge of the cell
+		// => check if there is a wall there
+		sidesThePlayerIsCloseTo.push(3);
+		wallsThePlayerIsCloseTo[3] = currentCellWalls[3];
+	}
+	else if(positionInCell.x + hitboxData.width/2 + amplifier > 1) {
+		// player is close to right edge of the cell
+		// => check if there is a wall there
+		sidesThePlayerIsCloseTo.push(1);
+		wallsThePlayerIsCloseTo[1] = currentCellWalls[1];
+	}
+	
+	// separate if-else clause for top&bottom
+	if(positionInCell.y - hitboxData.height/2 - amplifier < 0) {
+		// player is close to top edge of cell
+		// => check if there is a wall there
+		sidesThePlayerIsCloseTo.push(0);
+		wallsThePlayerIsCloseTo[0] = currentCellWalls[0];
+	}
+	else if(positionInCell.y + hitboxData.height/2 > 1) {
+		// player is close to bottom edge of cell
+		// => check if there is a wall there
+		sidesThePlayerIsCloseTo.push(2);
+		wallsThePlayerIsCloseTo[2] = currentCellWalls[2];
+	}
+
+	const playerNotByWalls = ! wallsThePlayerIsCloseTo.some(wall => {
+		return wall === true;
+	});
+	if(playerNotByWalls && sidesThePlayerIsCloseTo.length === 2 /*===2*/) {
+		// player's cell has no walls, now look at destination cell
+		// the destination will always be diagonal otherwise the player's
+		// cell would have had walls at the place the destination has walls
+		
+		// sidesThePlayerIsCloseTo will have at most 2 elmnts
+		// use .some(..) to check if any of the sides the player is close to 
+		// has a wall diagonally from it
+		const playerCannotMoveThere = sidesThePlayerIsCloseTo.some(side => {
+			// invert side to correspond to destination wall index
+			const wallIndexToCheckOfDestination = side+2 < 4 ? side+2 : side-2;
+
+			const movementX = sidesThePlayerIsCloseTo.includes(3) ? -1 
+							: sidesThePlayerIsCloseTo.includes(1) ? 1 : 0;
+			const movementY = sidesThePlayerIsCloseTo.includes(0) ? -1 
+							: sidesThePlayerIsCloseTo.includes(2) ? 1 : 0;
+			const destinationIndex = getIndexFromXY(col+movementX,row+movementY,cols);
+			const destinationCell = grid[destinationIndex];
+
+			if(destinationIndex < 0) {
+				// destionation is outside grid, do not allow this.
+				return true;
+			}
+
+			// now return true if a wall is blocking the path:
+			return destinationCell.getWalls()[wallIndexToCheckOfDestination] === true;
+		});
+		// todo - explain this ^ with a diagram
+
+		if(playerCannotMoveThere) {
+			// if the player is trying to move diagonally into a cell that has walls
+			// at the corner the player is trying to enter it from, then
+			// act as if the current cell has one of those walls which will cause
+			// the player to slide down or across the outside of 
+			// the destination cell instead of entering it.
+			wallsThePlayerIsCloseTo[sidesThePlayerIsCloseTo[0]] = true;
+		}
+	}
+
+	return wallsThePlayerIsCloseTo;
+}
+
+/*
+const pubnub = new PubNub({
+    publishKey : "pub-c-9ab0b954-2551-4a44-85a2-cdbadb3760cb",
+    subscribeKey : "sub-c-b06b11d8-a214-11ec-81c7-420d26494bdd",
+    uuid: "sec-c-ZWVkYzZiZDAtODJjYS00YmVkLThmOWYtZjg4ODkwZjhlNWFk"
+});
+pubnub.subscribe({channels: ["proba"]});
+pubnub.addListener({
+    message: function(receivedMessage) {
+        console.log("Punub msg received:",receivedMessage);
+    }
+});*/
+async function openPubnub() {
+	$.ajax("https://shy-plum-bass-slip.cyclic.app/pubnub-open", {
+		method: "POST"
+	}).always(() => {
+		console.log("opening pubnub again");
+		openPubnub();
+	});
+}
+
+function sendMsg() {
+	pubnub.publish({
+		channel: "proba",
+		message: "please-send-back-a-message"
+	});
+}
+
+
+
+
+
+
+
+
+
+</script>
+
+
+</body>
+</html>

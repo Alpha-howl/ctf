@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proba 4</title>
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.0.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+<script>
+
+
+const pubnub = new PubNub({
+    publishKey: "pub-c-9ab0b954-2551-4a44-85a2-cdbadb3760cb",
+    subscribeKey: "sub-c-b06b11d8-a214-11ec-81c7-420d26494bdd",
+    userId: "sec-c-ZWVkYzZiZDAtODJjYS00YmVkLThmOWYtZjg4ODkwZjhlNWFk",
+});
+
+pubnub.subscribe({
+    channels: ["proba"],
+});
+const listener = {
+    status: (statusEvent) => {
+        if (statusEvent.category === "PNConnectedCategory") {
+            console.log("PubNub connected");
+        }
+    },
+    message: (messageEvent) => {
+        console.log(messageEvent);
+    },
+    presence: (presenceEvent) => {
+        // handle presence
+    }
+};
+pubnub.addListener(listener);
+
+
+$.ajax("https://shy-plum-bass-slip.cyclic.app/pubnub-proba", {
+    method: "POST"
+}).then(res => {
+    console.log(res);
+});
+
+
+
+</script>
+
+</body>
+</html>

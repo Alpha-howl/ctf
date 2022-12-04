@@ -1,0 +1,109 @@
+<style>
+	.teams-heading {
+		color: white;
+		font-family: sans-serif;
+		position: absolute;
+	}
+
+	#teams-screen {
+		position: fixed;
+		inset: 0;
+		background-color: #9A7E7E;
+		padding-top: 5%;
+
+		display: flex;
+		justify-content: center;
+		place-items: center;
+		flex-direction: row;
+	}
+
+	.team-container {
+		width: 50%;
+		height: 95%;
+
+		display: flex;
+		place-items: start center;
+		justify-content: space-around;
+
+		background-color: var(--clr);
+		box-shadow: 0 0 15px 10px var(--clr);
+	}
+	.player-box {
+		width: 100px;
+		height: 100px;
+		border: 2px dashed rgba(255,255,255,.4);
+		margin-top: 35%;
+		translate: 0 -50%;
+
+		display: flex;
+		justify-content: center;
+		place-items: center;
+
+		color: white;
+		font-size: larger;
+
+		background-image: var(--back-img);
+		background-size: cover;
+		z-index: 10;
+	}
+	.player-box > span {
+		margin-top: calc(100% + 30px);
+		max-width: 120px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.player-box:nth-child(3) {
+		margin-top: 60%;
+	}
+
+	#team-a-container {
+		--clr: #597451;
+		--back-img: url("resources/players/Knight calling card.png");
+	}
+	#team-b-container {
+		--clr: #794e4e;
+		--back-img: url("resources/players/Skeleton calling card.png");
+	}
+
+	#vs {
+		border-radius: 50%;
+		height: 100px;
+		width: 100px;
+		display: flex;
+		justify-content: center;
+		place-items: center;
+
+		position: absolute;
+		top: 55%;
+		left: 50%;
+		translate: -50%;
+		
+		background-color: black;
+		color: yellow;
+		font-size: 3.2rem;
+		font-family: Algerian;
+		font-style: italic;
+
+		box-shadow: 0 0 5px 10px black;
+		z-index: 9;
+	}
+
+</style>
+
+<div id="teams-screen">
+
+	<div class="team-container" id="team-a-container">
+		<h2 class="teams-heading">
+			Knights
+		</h2>
+	</div>
+	<div id="vs">VS</div>
+	<div class="team-container" id="team-b-container">
+		<h2 class="teams-heading">
+			Skeletons
+		</h2>
+	</div>
+
+</div>

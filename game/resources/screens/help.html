@@ -1,0 +1,138 @@
+<div id="help-box">
+	
+	<style>
+		#help-box {
+			background-color: black;
+			position: fixed;
+			inset: 0;
+			color: white;
+
+			padding: 15px 25px;
+
+			overflow-y: scroll;
+			scrollbar-color: black #eab676;
+  			scrollbar-width: thin;
+		}
+
+		::-webkit-scrollbar {
+			width: 10px;
+		}
+		::-webkit-scrollbar-thumb {
+			background-color: #eab676;
+			border-radius: 1000px;
+		}
+		::-webkit-scrollbar-track {
+			background-color: none;
+		}
+
+		#help-box * {
+			color: inherit;
+			font-family: sans-serif;
+		}
+
+		.close-btn {
+		  position: absolute;
+		  top: 10px;
+		  right: 10px;
+
+		  font-size: 2rem;
+		  cursor: pointer;
+		  padding: 20px;
+
+		  border-radius: 50%;
+		  aspect-ratio: 1/1 !important;
+
+		  transition: background 200ms ease;
+		}
+
+		.close-btn:hover {
+		  background: rgba(255,255,255,.1);
+		}
+		.close-btn:active {
+		  background: rgba(250,250,250,.5);
+		}
+
+
+		h2 {
+			color: #a0bb8a !important;
+			width: 100%;
+			text-align: center;
+			font-size: 2rem;
+		}
+		p {
+			font-size: large;
+			border-left: 12px solid rgba(255,255,0,.5);
+			border-radius: 15px 0 0 15px;
+			padding-left: 15px;
+		}
+
+		#main-view {
+			width: 50%;
+			margin-left: 50%;
+			transform: translateX(-50%);
+			border: inset 3px solid yellow;
+		}
+
+
+
+		@media screen and (max-width: 550px) {
+			#main-view {
+				width: 100%;
+			}
+		}
+	</style>
+
+	<div id="main-view">
+		<div class="close-btn" id="close-btn">&#10006;</div>
+
+		<h2>How to play</h2> <br> <br> <br>
+
+		<p>
+			This online CTF game supports up to four players per match. <br><br>
+			There are two players in a team and once a match begins...
+			<br><br>
+			You must help your team reach the point total of 5 so that the match ends in your
+			favour!
+			<br><br>
+			Whichever team reaches 5 points first wins the match.
+			<br><br>
+			You can move your sprite by pressing and holding down the arrow keys in the direction you wish
+			to travel. The maze is looked at through a bird's eye perspective.
+		</p>
+		<br><br><br>
+		<p>
+			Points are scored when a player successfully travels to the opposition's base - which
+			will be on the opposite corner to your base - picks up their flag, and drops it at 
+			their base.
+			<br><br>
+			You pick up the enemy flag by stepping onto the coloured square. Then you drop their
+			flag at your base by stepping onto your base. After this you will see your team's point
+			total rising by one at the top of the screen.
+		</p>
+		<br><br>
+		<p>
+			If you collide into an enemy, one of you will be eliminated!<br><br>
+			When someone is eliminated, they spawn back at their base and any flag they may be carrying
+			is replaced back at the flag's base.
+			<br><br>
+			In a collision, whoever is further from their spawn/base will be eliminated, and the other
+			player will be able to continue without being respawned. 
+			<br><br>
+			However, if one of the colliding
+			players is carrying a flag, even if they are right by their base they will still be
+			eliminated.
+			<br><br>
+			If two flag-carriers collide, something interesting happens...
+			<br><br>
+			Each carrier will be carrying the other's flag.
+			<br><br>
+			And stepping on your own flag while carrying the enemy flag gives your team an extra point.
+			<br><br>
+			So the carrier moving towards the other carrier will capture the enemy flag and consequently become
+			a non-carrier, allowing them to eliminate the other carrier if they continue going towards them.
+		</p>
+
+	</div>
+
+
+</div>

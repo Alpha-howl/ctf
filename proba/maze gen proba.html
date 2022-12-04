@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Prototype of maze-generation: preview a maze configuration</title>
+
+	<style type="text/css">
+		html {
+			padding: 0;
+			height: 100%;
+			scroll-snap-type: y mandatory;
+			overflow-x: hidden;
+		}
+		body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			min-height: 100%;
+		}
+		#tools {
+			position: absolute;
+			top: 25%;
+			right: 100px;
+			max-width: 100px;
+		}
+		canvas {
+  			scroll-snap-align: start;
+		}
+	</style>
+
+</head>
+<body>
+
+<div id="tools">
+	<button id="btn">Generate a new maze preview</button>
+
+	<label for="range">
+		Choose the best probability ofalternate paths by sliding the slider
+	</label>
+	<input type="range" id="range" min="0" max="95" value="50">
+	<span id="range-out">50%</span>
+</div>
+
+
+<script type="text/javascript">
+
+class Chamber {
+	constructor(upperLeft, upperRight, lowerLeft, lowerRight) {
+		// origin = upperLeft
+		this.upperLeft = upperLeft;
+		this.upperRight = upperRight;
+		this.lowerLeft = lowerLeft;
+		this.lowerRight = lowerRight;
+	}
+
+
+	get isMinimumSized() {
+		// calc to see if the chamber is of minimum size
+		// i.e. if no more walls can fit
+		// i.e. if one of its dimensions is one unit across
+		return  this.lowerLeft[1] - this.upperLeft[1] <= 1 ||
+				this.upperRight[0] - this.upperLeft[0] <= 1;
+	}
+}
+class Wall {
+	constructor(start, end, isVertical) {
+		this.start = start;
+		this.end = end;
+		this.isVerical = isVertical;
+
+		let gap;
+		if(isVertical) {
+			const gapPos = Math.floor(
+				Math.random() * 
+				(end[1]-start[1])+start[1]
+			);
+			gap = [start[0], gapPos];
+		} else {
+			const gapPos = Math.floor(
+				Math.random() *
+				(end[0] - start[0]) + start[0]
+			);
+			gap = [gapPos, start[1]];
+		}
+		this.gap = gap;
+	}
+}
+async function recursiveWallDivision(cols, rows) {
+	const placedWalls = [];
+
+	const chambersToBeDivided = []; // is a stack, so add to and remove from top
+
+	const firstChamber = new Chamber([0,0], [cols, 0], [0, rows], [cols, rows]);
+	chambersToBeDivided.push(firstChamber);
+
+
+	while(chambersToBeDivided.length != 0) {
+		const currentChamber = chambersToBeDivided.splice(-1)[0];
+
+		
+		let newWallStart, newWallEnd;
+		const shouldBeVertical = Math.random() > .5;
+		if(shouldBeVertical) {
+			const min = currentChamber.upperLeft[0] + 1;
+			const max = currentChamber.upperRight[0] - 1;
+			const randDstAcrossChamber = Math.floor(Math.random() * 
+				(max - min)) + min;
+
+			newWallStart = [randDstAcrossChamber, currentChamber.upperLeft[1]];
+			newWallEnd = [randDstAcrossChamber, currentChamber.lowerLeft[1]];
+		} else {
+			const min = currentChamber.upperLeft[1] + 1;
+			const max = currentChamber.lowerLeft[1] - 1;
+			randDstAcrossChamber = Math.floor(Math.random() * 
+				(max - min)) + min;
+
+			newWallStart = [currentChamber.upperLeft[0], randDstAcrossChamber];
+			newWallEnd = [currentChamber.upperRight[0], randDstAcrossChamber];
+		}
+
+		const newWall = new Wall(newWallStart, newWallEnd, shouldBeVertical);
+
+		const probabilityToPlaceWall = Math.random();
+		if(probabilityToPlaceWall > .1) {
+			// place the wall
+			placedWalls.push(newWall);
+		} else {
+			// don't place the wall
+		}
+
+		// get the two chambers which were just created by the wall and check their size
+		// if more walls can fit there, put the chamber in question into the chambersToBeDivided stack
+
+		let coords1 = [];
+		let coords2 = [];
+
+		if(shouldBeVertical) {
+			coords1 = [
+				currentChamber.upperLeft,
+				newWallStart,
+				currentChamber.lowerLeft,
+				newWallEnd
+			];
+
+			coords2 = [
+				newWallStart,
+				currentChamber.upperRight,
+				newWallEnd,
+				currentChamber.lowerRight
+			];
+		} else {
+			coords1 = [
+				currentChamber.upperLeft,
+				currentChamber.upperRight,
+				newWallStart,
+				newWallEnd
+			];
+
+			coords2 = [
+				newWallStart,
+				newWallEnd,
+				currentChamber.lowerLeft,
+				currentChamber.lowerRight
+			];
+		}
+
+		// the two newly created chambers in an array:
+		const newlyCreatedChambers = [coords1, coords2].map(coords => new Chamber(...coords));
+
+		newlyCreatedChambers.forEach(chamberX => {
+			if(chamberX.isMinimumSized) {
+				// console.log(5005);
+				// no more walls can fit, escape the iteration
+				return;
+			}
+			// more walls can fit - add the chamber to the stack
+			chambersToBeDivided.push(chamberX);
+		});
+		// console.log("To be divided", chambersToBeDivided);
+
+		/*await (() => {
+			return new Promise(res => {
+				setTimeout(res, 500);
+			});
+		})();*/
+	}
+
+
+	// console.log("Problems with this approach - gap is sometimes on the end of the wall, gaps are not in actual cells but in the vertices of cells - this is a massive problem as this way the maze cannot be easily painted on teh screen, walls finish too early. Another problem is this alg is prone to creating long straight walks which deducts from the randomness and desired unpredictability of the mazes. I treid many hours and cannot fix this. Therefore i will use the other maze generation approach (think it's the Aldous-Broder algorithm, not sure tho).");
+	return placedWalls;
+}
+
+
+
+
+
+class Cell {
+	#x;
+	#y;
+	#index;
+	#neighbours = [];
+	#visited = false;
+	#walls = [true, true, true, true];
+
+	constructor(paramX, paramY, paramIndex) {
+		this.#x = paramX;
+		this.#y = paramY;
+		this.#index = paramIndex;
+	}
+
+
+	getY() {
+		return this.#y;
+	}
+	getX() {
+		return this.#x;
+	}
+	getIndex() {
+		return this.#index;
+	}
+	getNeighbours() {
+		return this.#neighbours;
+	}
+	isVisited() {
+		return this.#visited;
+	}
+	markAsVisited() {
+		this.#visited = true;
+	}
+	getWalls() {
+		return this.#walls;
+	}
+	removeWall(wallIndex) {
+		if(wallIndex > 3 || wallIndex < 0) {
+			throw "Error - wallIndex out of range (search 4354532)";
+			return;
+		}
+		this.#walls[wallIndex] = false;
+	}
+
+	initialiseNeighbours(grid, cols, rows) {
+		if(this.#neighbours.length != 0) {
+			return;
+		}
+
+		if(this.#x > 0) {
+			const leftNeighIndex = this.#index-1;
+			this.#neighbours.push(grid[leftNeighIndex]);
+		}
+		if(this.#y > 0) {
+			const topNeighIndex = this.#index - cols;
+			this.#neighbours.push(grid[topNeighIndex]);
+		}
+		if(this.#x < cols-1) {
+			const rightNeighIndex = this.#index + 1;
+			this.#neighbours.push(grid[rightNeighIndex]);
+		}
+		if(this.#y < rows-1) {
+			const bottomNeighIndex = this.#index + cols;
+			this.#neighbours.push(grid[bottomNeighIndex]);
+		}
+	}
+
+	toJSO() {
+        return {
+            x: this.#x,
+            y: this.#y,
+            index: this.#index,
+            neighbours: this.#neighbours,
+            visited: this.#visited,
+            walls: this.#walls,
+            toCellObj: () => {
+                const thisCellVersion = new Cell(this.#x, this.#y, this.#index);
+                if(this.#visited) {
+                	thisCellVersion.markAsVisited();
+                }
+                this.#walls.forEach((wall, index) => {
+                	if(wall === false) {
+                		thisCellVersion.removeWall(index);
+                	}
+                });
+
+                return thisCellVersion;
+            }
+        };
+    }
+}
+function randomDfs(cols, rows, probToVisitCellAgain=0.5) {
+	// first, generate the initial grid of cells with all walls intact:
+	// number of cells = resolution of maze = rows x columns
+	const grid = new Array(cols*rows);
+	// inject those cells into the grid array now
+	for (let i = 0; i < grid.length; i++) {
+		// find the current cell's row and column to instantiate it
+		const row = Math.floor(i / cols);
+		const col = i % cols;
+		grid[i] = new Cell(/*x*/col, /*y*/row, /*index in grid*/i);
+	}
+
+	for (let i = 0; i < grid.length; i++) {
+		// call the initialiseNeighbours method for each cell
+		grid[i].initialiseNeighbours(grid, cols, rows);
+	}
+
+
+	// define stack of cells to be processed & place
+	// the initial cell in it to start with
+	const cellsToProcessStack = [grid[0]];
+
+
+	while (cellsToProcessStack.length != 0) {
+		// pop the last cell from the stack & call it the current cell
+		const currentCell = cellsToProcessStack.splice(-1)[0];
+
+		if (Math.random() > probToVisitCellAgain) {
+			currentCell.markAsVisited();
+		}
+
+		// check to see if cell has unvisited neighbours
+		// by using a linear search and a flag
+		let hasUnvisitedNeighbours = false;
+		const unvisitedNeighbours = [];
+		const allNeighbours = currentCell.getNeighbours();
+		for (let i = 0; i < allNeighbours.length; i++) {
+			if(!allNeighbours[i].isVisited()) {
+				hasUnvisitedNeighbours = true;
+				unvisitedNeighbours.push(allNeighbours[i]);
+			}
+		}
+
+
+		if (hasUnvisitedNeighbours) {
+			// as in the structured English description, we have to do the following:
+			// if there are unvisited neighbours, push the cell onto the stack
+			// and remove the wall between that cell and one of the unvisited neighbours
+
+			cellsToProcessStack.push(currentCell);
+			const rand = Math.floor(Math.random()*unvisitedNeighbours.length);
+			const chosenNeighbour = unvisitedNeighbours[rand];
+
+			// now find the location of the neighbour relative to the current cell
+			// and remove the walls between the neighbour and the current cell
+			const indexDifference = currentCell.getIndex() - chosenNeighbour.getIndex();
+			if(indexDifference === -cols) {
+				// the neighbour is directly downwards from current cell, so
+				// remove top wall of neighbour and bottom wall of current cell
+				grid[chosenNeighbour.getIndex()].removeWall(0);
+				grid[currentCell.getIndex()].removeWall(2);
+			}
+			else if(indexDifference === cols) {
+				// neighbour is directly upwards from current cell, so
+				// remove bottom wall of neighbour and top wall of current cell
+				grid[chosenNeighbour.getIndex()].removeWall(2);
+				grid[currentCell.getIndex()].removeWall(0);
+			}
+			else if(indexDifference === -1) {
+				// neighbour is to the right -> of the current cell
+				// remove left wall of neighbour and right wall of current
+				grid[chosenNeighbour.getIndex()].removeWall(3);
+				grid[currentCell.getIndex()].removeWall(1);
+			}
+			else {
+				// indexDifference = 1, and the neighbour is to
+				// the left <- of the current cell
+				grid[chosenNeighbour.getIndex()].removeWall(1);
+				grid[currentCell.getIndex()].removeWall(3);
+			}
+
+			// now push neighbour to stack so it is 
+			// also processed like the current cell just was
+			cellsToProcessStack.push(grid[chosenNeighbour.getIndex()]);
+
+		} else {
+			// has no unvisited neigh.
+			// do nothing, all paths have alrady been carved around
+			// this cell - so no need for new paths
+		} // end if
+	} // end while
+	// finally, return the maze data (the grid array)
+	return grid;
+}
+function calculateCellDimensions(rows, cols) {
+	const height = Math.floor(document.body.clientHeight / rows);
+	const width = Math.floor(document.body.clientWidth / cols);
+	return Math.min(height-1, width-1);
+}
+function displayMaze(grid, ctx) {
+	let cellIndex = 0;
+	let gridLength = grid.length;
+	for ( ; cellIndex < gridLength; cellIndex++) {
+		const currentCell = grid[cellIndex];
+		const walls = currentCell.getWalls();
+
+
+		let wallIndex = 0;
+		for ( ; wallIndex < walls.length; wallIndex++) {
+			const currentWall = walls[wallIndex];
+			if (currentWall === false) {
+				// if currentWall is false there isn't a wall here
+				continue;
+			}
+
+			// if still running, wall is true
+			// so draw image of wall onto canvas
+
+			// first calculate the starting and ending points
+			let wallStartX = currentCell.getX() * CELL_SIZE;
+			let wallStartY = currentCell.getY() * CELL_SIZE;
+
+			let wallEndX = wallStartX;
+			let wallEndY = wallStartY;
+
+			if (wallIndex === 0 || wallIndex === 2) {
+				// wall is horizontal so make it 
+				// 20px in height (for eg):
+
+				if (wallIndex === 2) {
+					// if the wall is at the bottom side, add one CELL_SIZE to the 
+					// vertical coordiantes to shift the wall down
+					wallStartY += CELL_SIZE;
+					wallEndY = wallStartY;
+				}
+				wallStartY -= 4;
+				wallEndY += 4;
+
+				// then make it long horizontally 
+				wallEndX += CELL_SIZE;
+			} else {
+				// wall is vertical, so make it 
+				// 20px in width (for eg):
+
+				if (wallIndex === 1) {
+					// if the wall is at the right side, add one CELL_SIZE to the 
+					// horizontal coordiantes to shift the wall right
+					wallStartX += CELL_SIZE;
+					wallEndX = wallStartX;
+				}
+
+				wallStartX -= 4;
+				wallEndX += 4;
+
+				// and make it long vertically
+				wallEndY += CELL_SIZE;
+			}
+
+			// now draw the image onto the canvas
+			const dWidth = wallEndX - wallStartX;
+			const dHeight = wallEndY - wallStartY;
+			ctx.drawImage(wallImageElmnt, wallStartX, wallStartY, dWidth, dHeight);
+		}
+	}
+}
+
+function pickTeams(preparedPlayers, cols, rows) { 
+	// preparedPlayers is the array of usernames 
+	// shuffle the player usernames into a rand order:
+	const randomOrderUsernames = preparedPlayers.sort(() => Math.random() - .5); 
+
+	const playerNumber = randomOrderUsernames.length; 
+	const usernamesOfTeamA = randomOrderUsernames.slice(0, playerNumber/2); 
+	const usernamesOfTeamB = randomOrderUsernames.slice(playerNumber/2, playerNumber);
+
+
+	// now spawn points...
+	// team A will spawn in the top left
+	// team b will spawn in the bottom right
+	// so they are an equal dst from centre
+	const spawnPointA = [0,0];
+	const spawnPointB = [cols-1, rows-1];
+
+	const teamsInfo = {
+		teamA: {
+			players: usernamesOfTeamA,
+			spawnPoint: spawnPointA,
+			colour: "#E83100" // red
+		},
+		teamB: {
+			players: usernamesOfTeamB,
+			spawnPoint: spawnPointB,
+			colour: "#2D4628" // green
+		}
+	}
+
+	return teamsInfo;
+}
+
+
+
+// preload the sprites
+const wallImageElmnt = new Image();
+wallImageElmnt.src = "../game/resources/blocks/rocks/rock1.png";
+
+
+
+
+// maze metadata:
+const ROWS = 11;
+const COLS = 11;
+const CELL_SIZE = calculateCellDimensions(ROWS, COLS);
+
+
+// canvas metadata
+const canvasHeight = document.body.clientHeight;
+const canvasWidth = document.body.clientWidth;
+
+
+
+// single use case function to run when main btn clicked:
+const generateMazes = () => {
+	// remove old canvases so that the new ones can take their place
+	const oldCanvases = document.querySelectorAll("canvas");
+	Array.from(oldCanvases).forEach(oldCanvas => {
+		document.body.removeChild(oldCanvas);
+	});
+
+	// alternatePathProb = the chance that the current cell is 
+	// not marked as visited once popped
+	const alternatePathProb = parseInt(document.getElementById("range").value) / 100;
+	// draw five new mazes
+	for (let i = 0; i < 5; i++) {
+		const newCanvas = document.createElement("canvas");
+		newCanvas.height = canvasHeight;
+		newCanvas.width = canvasWidth;
+		document.body.appendChild(newCanvas);
+
+		const newCtx = newCanvas.getContext("2d");
+		const newMazeData = randomDfs(COLS, ROWS, alternatePathProb);
+		displayMaze(newMazeData, newCtx);
+	}
+};
+document.getElementById("btn").addEventListener("click", generateMazes);
+
+
+
+// update range output status text when mouse moves over slider:
+const slider = document.getElementById("range");
+slider.addEventListener("mousemove", () => {
+	document.getElementById("range-out").innerText = slider.value + "%";
+});
+
+
+
+</script>
+
+</body>
+</html>
