@@ -319,6 +319,7 @@ export async function loadJs(generator=arrayGenerator(urls)) {
 	scriptElmnt.setAttribute("src", currentUrl);
 	document.head.appendChild(scriptElmnt);
 	await (() => {
+		console.log("Loading script:", currentUrl);
 		return new Promise(scrLoaded => {
 			scriptElmnt.addEventListener("load", scrLoaded);
 		});
