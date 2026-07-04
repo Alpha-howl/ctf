@@ -420,7 +420,7 @@ function animateClient() {
 	// const gradient = ctx.createRadialGradient(cx, cy, innerRadius, cx, cy, outerRadius);
 	// gradient.addColorStop(0, 'rgba(0,0,0,0)');
 	// gradient.addColorStop(0.7, 'rgba(0,0,0,0)');
-	// gradient.addColorStop(1, 'rgba(0,0,0,1)');
+	// gradient.addColorStop(1, 'rgba(0,0,0,1)'); 
 
 
 	requestAnimationFrame(animateClient);
