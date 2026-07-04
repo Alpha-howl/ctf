@@ -399,7 +399,7 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 			}
 
 			// now return true if a wall is blocking the path:
-			return false && destinationCell.getWalls()[wallIndexToCheckOfDestination] === true;
+			return /*false && */destinationCell.getWalls()[wallIndexToCheckOfDestination] === true;
 		});
 		// todo - explain this ^ with a diagram
 
