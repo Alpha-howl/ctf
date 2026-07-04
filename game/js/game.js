@@ -162,10 +162,10 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 				overlayImg.data.sheetStartY,
 				overlayImg.data.width,
 				overlayImg.data.height,
-				currentCell.getX() * cellSize + scenePosition.x,
-				currentCell.getY() * cellSize + scenePosition.y,
-				cellSize,
-				cellSize
+				currentCell.getX() * cellSize + scenePosition.x + 4,
+				currentCell.getY() * cellSize + scenePosition.y + 4,
+				cellSize - 8,
+				cellSize - 8
 			);
 		}
 
@@ -273,6 +273,44 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 				dHeight						// height on the canvas
 			);
 		}
+
+		
+		// decorations:
+		const cachedDecoKey = "deco-" + currentCell.getIndex();
+		if (!cachedImgs[cachedDecoKey]?.img) {
+			const decoList = MAZE_BLOCKS.decorations;
+			// ~20% chance of a decoration in any cell
+			if (decoList.length > 0 && Math.random() < 0.20) {
+				const randDecoName = decoList[Math.floor(Math.random() * decoList.length)];
+				cachedImgs[cachedDecoKey] = { img: new Image(), data: MAZE_BLOCKS[randDecoName] };
+				cachedImgs[cachedDecoKey].img.src = MAZE_BLOCKS[randDecoName].src;
+			} else {
+				cachedImgs[cachedDecoKey] = { img: null };
+			}
+		}
+		const decoImg = cachedImgs[cachedDecoKey];
+		if (decoImg?.img?.complete && decoImg.data) {
+			const scenePosition = {
+				x: canvas.width / 2 - playerData.x * cellSize,
+				y: canvas.height / 2 - playerData.y * cellSize
+			};
+			// Draw decoration scaled to ~60% of cell size, centered
+			const decoSize = cellSize * 0.6;
+			const decoOffset = (cellSize - decoSize) / 2;
+			ctx.drawImage(
+				decoImg.img,
+				decoImg.data.sheetStartX,
+				decoImg.data.sheetStartY,
+				decoImg.data.width,
+				decoImg.data.height,
+				currentCell.getX() * cellSize + scenePosition.x + decoOffset,
+				currentCell.getY() * cellSize + scenePosition.y + decoOffset,
+				decoSize,
+				decoSize
+			);
+		}
+
+
 	}
 }
 // preload the sprites
