@@ -193,7 +193,7 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 				const blocks = MAZE_BLOCKS || await GET_MAZE_BLOCKS();
 				const walls = blocks[wallOrientation+"Walls"];
 				const randWallName = walls[Math.floor(Math.random()*walls.length)];
-				const randSrc = "../game" + blocks[randWallName].src;
+				const randSrc = "." + blocks[randWallName].src;
 				cachedImgs["wall-"+cachedWallIndex].data = blocks[randWallName];
 				cachedImgs["wall-"+cachedWallIndex].img.src = randSrc;
 				await (() => {
