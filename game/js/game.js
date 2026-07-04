@@ -279,13 +279,13 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 		
 		// decorations:
 		const cachedDecoKey = "deco-" + currentCell.getIndex();
-		if (!cachedImgs[cachedDecoKey]?.img) {
+		if (!(cachedDecoKey in cachedImgs)) {
 			const decoList = MAZE_BLOCKS.decorations;
 			// ~20% chance of a decoration in any cell
 			if (decoList.length > 0 && Math.random() < 0.20) {
 				const randDecoName = decoList[Math.floor(Math.random() * decoList.length)];
 				// Store a random offset within the cell (0 to 1 range)
-				const decoScale = 0.4 + Math.random() * 0.2; // 40-60% of cell size
+				const decoScale = 0.15 + Math.random() * 0.1;
 				const maxOffset = 1 - decoScale;
 				cachedImgs[cachedDecoKey] = {
 					img: new Image(),
