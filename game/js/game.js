@@ -112,27 +112,56 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 	for (; cellIndex < gridLength; cellIndex++) {
 		const currentCell = grid[cellIndex];
 
-		// Draw floor tile for this cell
-		const floors = MAZE_BLOCKS.floors;
-		const cachedFloorKey = "floor-" + currentCell.getIndex();
-		if (!cachedImgs[cachedFloorKey]?.img) {
-			cachedImgs[cachedFloorKey] = { img: new Image() };
-			const randFloorName = floors[Math.floor(Math.random() * floors.length)];
-			cachedImgs[cachedFloorKey].data = MAZE_BLOCKS[randFloorName];
-			cachedImgs[cachedFloorKey].img.src = MAZE_BLOCKS[randFloorName].src;
+		// Draw grass base for every cell
+		const cachedGrassKey = "floor-grass-" + currentCell.getIndex();
+		if (!cachedImgs[cachedGrassKey]?.img) {
+			cachedImgs[cachedGrassKey] = { img: new Image() };
+			cachedImgs[cachedGrassKey].data = MAZE_BLOCKS["Grass"];
+			cachedImgs[cachedGrassKey].img.src = MAZE_BLOCKS["Grass"].src;
 		}
-		const floorImg = cachedImgs[cachedFloorKey];
-		if (floorImg.img.complete && floorImg.data) {
+		const grassImg = cachedImgs[cachedGrassKey];
+		if (grassImg.img.complete && grassImg.data) {
 			const scenePosition = {
 				x: canvas.width / 2 - playerData.x * cellSize,
 				y: canvas.height / 2 - playerData.y * cellSize
 			};
 			ctx.drawImage(
-				floorImg.img,
-				floorImg.data.sheetStartX,
-				floorImg.data.sheetStartY,
-				floorImg.data.width,
-				floorImg.data.height,
+				grassImg.img,
+				grassImg.data.sheetStartX,
+				grassImg.data.sheetStartY,
+				grassImg.data.width,
+				grassImg.data.height,
+				currentCell.getX() * cellSize + scenePosition.x,
+				currentCell.getY() * cellSize + scenePosition.y,
+				cellSize,
+				cellSize
+			);
+		}
+
+		// Occasionally draw a cobble path on top
+		const cachedFloorKey = "floor-overlay-" + currentCell.getIndex();
+		if (!cachedImgs[cachedFloorKey]?.img) {
+			const overlays = MAZE_BLOCKS.floors.filter(name => name !== "Grass");
+			if (overlays.length > 0 && Math.random() < 0.15) {
+				const randOverlayName = overlays[Math.floor(Math.random() * overlays.length)];
+				cachedImgs[cachedFloorKey] = { img: new Image(), data: MAZE_BLOCKS[randOverlayName] };
+				cachedImgs[cachedFloorKey].img.src = MAZE_BLOCKS[randOverlayName].src;
+			} else {
+				cachedImgs[cachedFloorKey] = { img: null };
+			}
+		}
+		const overlayImg = cachedImgs[cachedFloorKey];
+		if (overlayImg?.img?.complete && overlayImg.data) {
+			const scenePosition = {
+				x: canvas.width / 2 - playerData.x * cellSize,
+				y: canvas.height / 2 - playerData.y * cellSize
+			};
+			ctx.drawImage(
+				overlayImg.img,
+				overlayImg.data.sheetStartX,
+				overlayImg.data.sheetStartY,
+				overlayImg.data.width,
+				overlayImg.data.height,
 				currentCell.getX() * cellSize + scenePosition.x,
 				currentCell.getY() * cellSize + scenePosition.y,
 				cellSize,
