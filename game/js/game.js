@@ -320,7 +320,6 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 			);
 			ctx.globalAlpha = 1;
 		}
-		}
 
 
 	}
