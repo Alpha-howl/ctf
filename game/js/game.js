@@ -156,6 +156,7 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 				x: canvas.width / 2 - playerData.x * cellSize,
 				y: canvas.height / 2 - playerData.y * cellSize
 			};
+			ctx.globalAlpha = 0.5;
 			ctx.drawImage(
 				overlayImg.img,
 				overlayImg.data.sheetStartX,
@@ -167,6 +168,7 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 				cellSize - 8,
 				cellSize - 8
 			);
+			ctx.globalAlpha = 1;
 		}
 
 		const walls = currentCell.getWalls();
@@ -297,6 +299,7 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 			// Draw decoration scaled to ~60% of cell size, centered
 			const decoSize = cellSize * 0.6;
 			const decoOffset = (cellSize - decoSize) / 2;
+			ctx.globalAlpha = 0.85;
 			ctx.drawImage(
 				decoImg.img,
 				decoImg.data.sheetStartX,
@@ -308,6 +311,7 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 				decoSize,
 				decoSize
 			);
+			ctx.globalAlpha = 1;
 		}
 
 
