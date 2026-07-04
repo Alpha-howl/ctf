@@ -80,115 +80,311 @@
 	},
 	"Planter1": {
 		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 49,
-		"sheetStartY": 4,
-		"width": 46,
-		"height": 43
+		"sheetStartX": 51,
+		"sheetStartY": 6,
+		"width": 42,
+		"height": 39
 	},
 	"Planter2": {
 		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 97,
-		"sheetStartY": 4,
-		"width": 46,
-		"height": 43
+		"sheetStartX": 99,
+		"sheetStartY": 6,
+		"width": 42,
+		"height": 39
 	},
 	"Planter3": {
 		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 145,
-		"sheetStartY": 4,
-		"width": 46,
-		"height": 43
+		"sheetStartX": 147,
+		"sheetStartY": 6,
+		"width": 42,
+		"height": 39
 	},
 	"Planter4": {
 		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 193,
-		"sheetStartY": 4,
-		"width": 46,
-		"height": 43
+		"sheetStartX": 195,
+		"sheetStartY": 6,
+		"width": 42,
+		"height": 39
 	},
-	"RockA": {
+	"Planter5": {
 		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 4,
-		"sheetStartY": 148,
-		"width": 43,
-		"height": 40
-	},
-	"RockB": {
-		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 52,
-		"sheetStartY": 148,
-		"width": 43,
-		"height": 40
-	},
-	"BoulderGroup1": {
-		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 16,
-		"sheetStartY": 232,
-		"width": 67,
-		"height": 58
-	},
-	"BoulderGroup2": {
-		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 103,
-		"sheetStartY": 229,
-		"width": 76,
-		"height": 61
-	},
-	"WoodenSign": {
-		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 340,
-		"sheetStartY": 586,
-		"width": 43,
-		"height": 40
-	},
-	"TreeSageGreen": {
-		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 675,
-		"sheetStartY": 9,
-		"width": 84,
-		"height": 90
-	},
-	"TreeTeal": {
-		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 669,
-		"sheetStartY": 123,
-		"width": 99,
-		"height": 120
-	},
-	"TreeBrightGreen": {
-		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 669,
-		"sheetStartY": 267,
-		"width": 99,
-		"height": 120
-	},
-	"TreeDarkTeal": {
-		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 669,
-		"sheetStartY": 411,
-		"width": 99,
-		"height": 120
-	},
-	"TreeLime": {
-		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 669,
-		"sheetStartY": 555,
-		"width": 99,
-		"height": 120
+		"sheetStartX": 243,
+		"sheetStartY": 6,
+		"width": 42,
+		"height": 39
 	},
 	"Building": {
 		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 241,
-		"sheetStartY": 4,
-		"width": 94,
-		"height": 91
+		"sheetStartX": 252,
+		"sheetStartY": 6,
+		"width": 81,
+		"height": 87
 	},
 	"TallStructure": {
 		"src": "./resources/blocks/village-stuff.png",
-		"sheetStartX": 337,
-		"sheetStartY": 4,
+		"sheetStartX": 339,
+		"sheetStartY": 6,
+		"width": 42,
+		"height": 87
+	},
+	"House": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 12,
+		"sheetStartY": 60,
+		"width": 72,
+		"height": 84
+	},
+	"SmallHouse": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 339,
+		"sheetStartY": 99,
+		"width": 42,
+		"height": 45
+	},
+	"RockA": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 6,
+		"sheetStartY": 150,
+		"width": 39,
+		"height": 36
+	},
+	"RockB": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 54,
+		"sheetStartY": 150,
+		"width": 39,
+		"height": 36
+	},
+	"BoulderSmall1": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 18,
+		"sheetStartY": 234,
 		"width": 63,
-		"height": 136
+		"height": 54
+	},
+	"BoulderSmall2": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 105,
+		"sheetStartY": 231,
+		"width": 72,
+		"height": 57
+	},
+	"BoulderLarge1": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 9,
+		"sheetStartY": 318,
+		"width": 72,
+		"height": 66
+	},
+	"BoulderLarge2": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 96,
+		"sheetStartY": 312,
+		"width": 84,
+		"height": 69
+	},
+	"FencePostVertical": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 336,
+		"sheetStartY": 195,
+		"width": 48,
+		"height": 141
+	},
+	"WoodenSign": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 342,
+		"sheetStartY": 588,
+		"width": 39,
+		"height": 36
+	},
+	"FencePost1": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 18,
+		"sheetStartY": 642,
+		"width": 21,
+		"height": 48
+	},
+	"FencePost2": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 105,
+		"sheetStartY": 642,
+		"width": 24,
+		"height": 48
+	},
+	"TreeSageGreen": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 678,
+		"sheetStartY": 12,
+		"width": 78,
+		"height": 84
+	},
+	"TreeTeal": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 672,
+		"sheetStartY": 126,
+		"width": 96,
+		"height": 114
+	},
+	"TreeBrightGreen": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 672,
+		"sheetStartY": 270,
+		"width": 96,
+		"height": 114
+	},
+	"TreeDarkTeal": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 672,
+		"sheetStartY": 414,
+		"width": 96,
+		"height": 114
+	},
+	"TreeLime": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 672,
+		"sheetStartY": 558,
+		"width": 96,
+		"height": 114
+	},
+	"TreeGreen6": {
+		"src": "./resources/blocks/village-stuff.png",
+		"sheetStartX": 288,
+		"sheetStartY": 654,
+		"width": 96,
+		"height": 114
+	},
+	"Crate": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 418,
+		"sheetStartY": 288,
+		"width": 28,
+		"height": 32
+	},
+	"Barrel": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 450,
+		"sheetStartY": 288,
+		"width": 28,
+		"height": 32
+	},
+	"SignPost2": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 482,
+		"sheetStartY": 322,
+		"width": 28,
+		"height": 30
+	},
+	"Bush": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 452,
+		"sheetStartY": 328,
+		"width": 26,
+		"height": 24
+	},
+	"FenceHorizontal2": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 448,
+		"sheetStartY": 354,
+		"width": 64,
+		"height": 30
+	},
+	"FenceGate": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 322,
+		"sheetStartY": 170,
+		"width": 60,
+		"height": 52
+	},
+	"FenceStructure": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 384,
+		"sheetStartY": 200,
+		"width": 96,
+		"height": 86
+	},
+	"WallVertical2": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 488,
+		"sheetStartY": 192,
+		"width": 16,
+		"height": 128
+	},
+	"Rock2A": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 260,
+		"sheetStartY": 196,
+		"width": 26,
+		"height": 24
+	},
+	"Rock2B": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 292,
+		"sheetStartY": 196,
+		"width": 26,
+		"height": 24
+	},
+	"Boulder2Small1": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 268,
+		"sheetStartY": 252,
+		"width": 42,
+		"height": 36
+	},
+	"Boulder2Small2": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 326,
+		"sheetStartY": 250,
+		"width": 48,
+		"height": 38
+	},
+	"Boulder2Large1": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 262,
+		"sheetStartY": 308,
+		"width": 48,
+		"height": 44
+	},
+	"Boulder2Large2": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 320,
+		"sheetStartY": 304,
+		"width": 56,
+		"height": 46
+	},
+	"Tree2_1": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 256,
+		"sheetStartY": 404,
+		"width": 64,
+		"height": 76
+	},
+	"Tree2_2": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 320,
+		"sheetStartY": 404,
+		"width": 64,
+		"height": 76
+	},
+	"Tree2_3": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 384,
+		"sheetStartY": 404,
+		"width": 64,
+		"height": 76
+	},
+	"Tree2_4": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 448,
+		"sheetStartY": 404,
+		"width": 64,
+		"height": 76
+	},
+	"BushRow": {
+		"src": "./resources/blocks/village-stuff2.png",
+		"sheetStartX": 10,
+		"sheetStartY": 490,
+		"width": 172,
+		"height": 22
 	},
 	"horizontalWalls": [
 		"WoodenWall",
@@ -196,26 +392,46 @@
 		"SignAndFence",
 		"bushes",
 		"bushes2",
-		"BoulderGroup1",
-		"BoulderGroup2"
+		"BoulderSmall1",
+		"BoulderSmall2",
+		"BoulderLarge1",
+		"BoulderLarge2",
+		"FenceHorizontal2",
+		"BushRow"
 	],
 	"verticalWalls": [
 		"WoodenWallDown",
-		"TallStructure"
+		"FencePostVertical",
+		"TallStructure",
+		"WallVertical2",
+		"FencePost1",
+		"FencePost2"
 	],
 	"decorations": [
 		"Planter1",
 		"Planter2",
 		"Planter3",
 		"Planter4",
+		"Planter5",
 		"RockA",
 		"RockB",
+		"Rock2A",
+		"Rock2B",
 		"WoodenSign",
+		"SignPost2",
+		"Crate",
+		"Barrel",
+		"Bush",
 		"TreeSageGreen",
 		"TreeTeal",
 		"TreeBrightGreen",
 		"TreeDarkTeal",
-		"TreeLime"
+		"TreeLime",
+		"TreeGreen6",
+		"Tree2_1",
+		"Tree2_2",
+		"Tree2_3",
+		"Tree2_4"
 	],
 	"floors": [
 		"Grass",
