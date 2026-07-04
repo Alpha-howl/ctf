@@ -194,7 +194,6 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 				const walls = blocks[wallOrientation + "Walls"];
 				const randWallName = walls[Math.floor(Math.random() * walls.length)];
 				const randSrc = /*"." +*/ blocks[randWallName].src;
-				console.log("(A) Attempting to load: " + randSrc);
 				cachedImgs["wall-" + cachedWallIndex].data = blocks[randWallName];
 				cachedImgs["wall-" + cachedWallIndex].img.src = randSrc;
 				await (() => {
@@ -386,7 +385,7 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 		// has a wall diagonally from it
 		const playerCannotMoveThere = sidesThePlayerIsCloseTo.some((side, sideIndex) => {
 			// invert side to correspond to destination wall index
-			const wallIndexToCheckOfDestination = side < 2 ? side + 2 : side - 2;
+			const wallIndexToCheckOfDestination = 3 - side; //side < 2 ? side + 2 : side - 2;
 
 			const movementX = side === 3 ? -1 : side === 1 ? 1 : 0;
 			const movementY = side === 0 ? -1 : side === 2 ? 1 : 0;
