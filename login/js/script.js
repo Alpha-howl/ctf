@@ -1,3 +1,5 @@
+const MY_SERVER_URL = "https://ctf-game-314y.onrender.com";
+
 function displayScreen(screenId) {
   window.event?.preventDefault?.();
   // Create the promise, because this fn is async
@@ -77,7 +79,7 @@ async function loginBtnClick() {
 	target.style.opacity = .5;
 	target.style.pointerEvents = "none";
 
-	const loginResult = await $.ajax("https://shy-plum-bass-slip.cyclic.app/log-in", {
+	const loginResult = await $.ajax(MY_SERVER_URL+"/log-in", {
 		method: "POST",
 		cache: false,
 		data: {
@@ -111,7 +113,7 @@ async function signUpBtnClick() {
   target.style.opacity = .5;
   target.style.pointerEvents = "none";
 
-  const newAccResult = await $.ajax("https://shy-plum-bass-slip.cyclic.app/create-new-account", {
+  const newAccResult = await $.ajax(MY_SERVER_URL+"/create-new-account", {
     method: "POST",
     cache: false,
     data: {
@@ -278,7 +280,7 @@ function requestNewUsid(btn) {
     return;
   }
 
-  $.ajax("https://shy-plum-bass-slip.cyclic.app/create-reset-password-session", {
+  $.ajax(MY_SERVER_URL+"/create-reset-password-session", {
     method: "POST",
     cache: false, 
     data: {
@@ -294,7 +296,7 @@ function requestNewUsid(btn) {
   });
 }
 function sendEmailRequest(usid) {
-  $.ajax("https://shy-plum-bass-slip.cyclic.app/send-otp-for-usid", {
+  $.ajax(MY_SERVER_URL+"/send-otp-for-usid", {
     method: "POST",
     cache: false, 
     data: {
@@ -317,7 +319,7 @@ function sendOtpToServer(btn) {
     return;
   }
 
-  $.ajax("https://shy-plum-bass-slip.cyclic.app/validate-otp-attempt", {
+  $.ajax(MY_SERVER_URL+"/validate-otp-attempt", {
     method: "POST",
     cache: false, 
     data: {
@@ -340,7 +342,7 @@ function sendNewPasswordToServer(btn) {
     return;
   }
 
-  $.ajax("https://shy-plum-bass-slip.cyclic.app/set-new-password", {
+  $.ajax(MY_SERVER_URL+"/set-new-password", {
     method: "POST",
     cache: false, 
     data: {

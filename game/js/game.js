@@ -1,5 +1,6 @@
 import * as utils from "./helpingFuncs.js";
 
+const MY_SERVER_URL = "https://ctf-game-314y.onrender.com";
 
 // maze metadata:
 export const ROWS = 11;
@@ -463,7 +464,7 @@ async function checkUserLoggedIn() {
 		return window.$?.ajax != undefined;
 	});
 	// send req validate-jwt
-	const {success} = await $.ajax("https://shy-plum-bass-slip.cyclic.app/validate-jwt", {
+	const {success} = await $.ajax(MY_SERVER_URL+"/validate-jwt", {
 		method: "POST",
 		cache: false,
 		data: {
@@ -599,7 +600,7 @@ let pubnub;
 let channelName;
 let userTeamInfo;
 async function joinNextAvailableRoom() {
-	const joinRoomResponse = await $.ajax("https://shy-plum-bass-slip.cyclic.app/join-room", {
+	const joinRoomResponse = await $.ajax(MY_SERVER_URL+"/join-room", {
 		method: "POST",
 		data: {
 			jwt: localStorage.getItem("jwt")
@@ -643,7 +644,7 @@ async function joinNextAvailableRoom() {
 	
 	
 	const sendReq = async () => {
-		return await $.ajax("https://shy-plum-bass-slip.cyclic.app/ready-to-play", {
+		return await $.ajax(MY_SERVER_URL+"/ready-to-play", {
 			method: "POST",
 			data: {
 				jwt: localStorage.getItem("jwt"),
@@ -726,7 +727,7 @@ async function openPubnub(channelName) {
 	if(shouldNotOpenPubnub) {
 		return;
 	}
-	$.ajax("https://shy-plum-bass-slip.cyclic.app/pubnub-open", {
+	$.ajax(MY_SERVER_URL+"/pubnub-open", {
 		method: "POST",
 		data: {
 			channelName

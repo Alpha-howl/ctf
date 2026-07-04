@@ -1,3 +1,4 @@
+const MY_SERVER_URL = "https://ctf-game-314y.onrender.com";
 let header, payload, sig;
 
 const jwt = localStorage.getItem("jwt");
@@ -25,7 +26,7 @@ if(!jwt) {
 
 async function validateJwt() {
 	// send req validate-jwt
-	return await $.ajax("https://shy-plum-bass-slip.cyclic.app/validate-jwt", {
+	return await $.ajax(MY_SERVER_URL+"/validate-jwt", {
 		method: "POST",
 		cache: false,
 		data: {
@@ -60,7 +61,7 @@ function showNotSignedInMsg() {
 }
 
 async function getAccountDetails() {
-	return await $.ajax("https://shy-plum-bass-slip.cyclic.app/get-acc-details", {
+	return await $.ajax(MY_SERVER_URL+"/get-acc-details", {
 		method: "POST",
 		cache: false,
 		data: {
@@ -193,7 +194,7 @@ function displayErrorScreen() {
 }
 
 async function sendDeleteAccountRequest(passwordAttempt, usernameOrEmail) {
-	const result = await $.ajax("https://shy-plum-bass-slip.cyclic.app/delete-account", {
+	const result = await $.ajax(MY_SERVER_URL+"/delete-account", {
 		method: "POST",
 		cache: false,
 		data: {
