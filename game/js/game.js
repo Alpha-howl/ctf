@@ -111,8 +111,36 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 	let gridLength = grid.length;
 	for (; cellIndex < gridLength; cellIndex++) {
 		const currentCell = grid[cellIndex];
-		const walls = currentCell.getWalls();
 
+		// Draw floor tile for this cell
+		const floors = MAZE_BLOCKS.floors;
+		const cachedFloorKey = "floor-" + currentCell.getIndex();
+		if (!cachedImgs[cachedFloorKey]?.img) {
+			cachedImgs[cachedFloorKey] = { img: new Image() };
+			const randFloorName = floors[Math.floor(Math.random() * floors.length)];
+			cachedImgs[cachedFloorKey].data = MAZE_BLOCKS[randFloorName];
+			cachedImgs[cachedFloorKey].img.src = MAZE_BLOCKS[randFloorName].src;
+		}
+		const floorImg = cachedImgs[cachedFloorKey];
+		if (floorImg.img.complete && floorImg.data) {
+			const scenePosition = {
+				x: canvas.width / 2 - playerData.x * cellSize,
+				y: canvas.height / 2 - playerData.y * cellSize
+			};
+			ctx.drawImage(
+				floorImg.img,
+				floorImg.data.sheetStartX,
+				floorImg.data.sheetStartY,
+				floorImg.data.width,
+				floorImg.data.height,
+				currentCell.getX() * cellSize + scenePosition.x,
+				currentCell.getY() * cellSize + scenePosition.y,
+				cellSize,
+				cellSize
+			);
+		}
+
+		const walls = currentCell.getWalls();
 		let wallIndex = 0;
 		for (; wallIndex < walls.length; wallIndex++) {
 			const currentWall = walls[wallIndex];

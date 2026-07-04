@@ -78,17 +78,18 @@
 		"width": 96,
 		"height": 96
 	},
-
-
-
-
-
-	
-
-
-
-	"horizontalWalls": ["WoodenWall", "SmallRocks", "SignAndFence", "bushes", "bushes2"],
-	"verticalWalls": ["WoodenWallDown"],
+	"horizontalWalls": [
+		"WoodenWall",
+		"SmallRocks",
+		"SignAndFence",
+		"bushes",
+		"bushes2"
+	],
+	"verticalWalls": [
+		"WoodenWallDown"
+	],
 	"decorations": [],
-	"floors": ["Grass"]
+	"floors": [
+		"Grass"
+	]
 }
