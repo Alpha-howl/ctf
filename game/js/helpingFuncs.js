@@ -306,7 +306,7 @@ function* arrayGenerator(array) {
 const urls = [
 		"https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js",
 		"https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.0.min.js",
-		"https://yoannmoinet.github.io/nipplejs/javascripts/nipplejs.js"
+		"https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.2/nipplejs.min.js"//"https://yoannmoinet.github.io/nipplejs/javascripts/nipplejs.js"
 	];
 
 export async function loadJs(generator=arrayGenerator(urls)) {
