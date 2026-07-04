@@ -90,6 +90,8 @@
 	],
 	"decorations": [],
 	"floors": [
-		"Grass"
+		"Grass",
+		"CobblePath",
+		"DirtyCobblePath"
 	]
 }
