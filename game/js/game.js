@@ -386,7 +386,7 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
         // has a wall diagonally from it
         const playerCannotMoveThere = sidesThePlayerIsCloseTo.some((side, sideIndex) => {
             // invert side to correspond to destination wall index
-            const wallIndexToCheckOfDestination = 3-side;
+            const wallIndexToCheckOfDestination = side < 2 ? side + 2 : side - 2;
 
             const movementX = side === 3 ? -1 : side === 1 ? 1 : 0;
             const movementY = side === 0 ? -1 : side === 2 ? 1 : 0;
