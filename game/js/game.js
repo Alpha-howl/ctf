@@ -451,7 +451,9 @@ function loadAssets() {
 	const totalAssets = functionsWhichLoadAssets.length;
 	for(let i = 0; i < totalAssets; i++) {
 		const assetLoadingFunc = functionsWhichLoadAssets[i];
+		console.log("Loading asset:", assetLoadingFunc, i);
 		assetLoadingFunc().then(res => {
+			console.log("Loaded asset:", assetLoadingFunc, i, res);
 			assetsLoaded += 1;
 			updateLoadingBar(assetsLoaded/totalAssets);
 		});
