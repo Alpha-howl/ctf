@@ -784,7 +784,7 @@ function findRadiusAroundPlayer(grid, playerX, playerY, cols, radius) {
 		const cellY = currentCell.getY();
 		const pythagSquareDistanceFromPlayer = (playerX - cellX) ** 2 + (playerY - cellY) ** 2;
 
-		if (pythagSquareDistanceFromPlayer > sqrRadius + 4) {
+		if (pythagSquareDistanceFromPlayer > sqrRadius + 8) {
 			continue;
 		}
 
