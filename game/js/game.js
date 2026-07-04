@@ -3,8 +3,8 @@ import * as utils from "./helpingFuncs.js";
 const MY_SERVER_URL = "https://ctf-game-314y.onrender.com";
 
 // maze metadata:
-export const ROWS = 11;
-export const COLS = 11;
+export const ROWS = 4;
+export const COLS = 4;
 
 
 
@@ -194,6 +194,7 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 				const walls = blocks[wallOrientation+"Walls"];
 				const randWallName = walls[Math.floor(Math.random()*walls.length)];
 				const randSrc = /*"." +*/ blocks[randWallName].src;
+				console.log("(A) Attempting to load: " + randSrc);
 				cachedImgs["wall-"+cachedWallIndex].data = blocks[randWallName];
 				cachedImgs["wall-"+cachedWallIndex].img.src = randSrc;
 				await (() => {
