@@ -140,7 +140,7 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 
 		// Occasionally draw a cobble path on top
 		const cachedFloorKey = "floor-overlay-" + currentCell.getIndex();
-		if (!cachedImgs[cachedFloorKey]?.img) {
+		if (!(cachedFloorKey in cachedImgs)) {
 			const overlays = MAZE_BLOCKS.floors.filter(name => name !== "Grass");
 			if (overlays.length > 0 && Math.random() < 0.15) {
 				const randOverlayName = overlays[Math.floor(Math.random() * overlays.length)];
@@ -284,7 +284,16 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 			// ~20% chance of a decoration in any cell
 			if (decoList.length > 0 && Math.random() < 0.20) {
 				const randDecoName = decoList[Math.floor(Math.random() * decoList.length)];
-				cachedImgs[cachedDecoKey] = { img: new Image(), data: MAZE_BLOCKS[randDecoName] };
+				// Store a random offset within the cell (0 to 1 range)
+				const decoScale = 0.4 + Math.random() * 0.2; // 40-60% of cell size
+				const maxOffset = 1 - decoScale;
+				cachedImgs[cachedDecoKey] = {
+					img: new Image(),
+					data: MAZE_BLOCKS[randDecoName],
+					offsetX: Math.random() * maxOffset,
+					offsetY: Math.random() * maxOffset,
+					scale: decoScale
+				};
 				cachedImgs[cachedDecoKey].img.src = MAZE_BLOCKS[randDecoName].src;
 			} else {
 				cachedImgs[cachedDecoKey] = { img: null };
@@ -296,22 +305,21 @@ async function displayMaze(grid, ctx, cellSize, playerData, cols, rows) {
 				x: canvas.width / 2 - playerData.x * cellSize,
 				y: canvas.height / 2 - playerData.y * cellSize
 			};
-			// Draw decoration scaled to ~60% of cell size, centered
-			const decoSize = cellSize * 0.6;
-			const decoOffset = (cellSize - decoSize) / 2;
-			ctx.globalAlpha = 0.85;
+			const decoSize = cellSize * decoImg.scale;
+			ctx.globalAlpha = .85;
 			ctx.drawImage(
 				decoImg.img,
 				decoImg.data.sheetStartX,
 				decoImg.data.sheetStartY,
 				decoImg.data.width,
 				decoImg.data.height,
-				currentCell.getX() * cellSize + scenePosition.x + decoOffset,
-				currentCell.getY() * cellSize + scenePosition.y + decoOffset,
+				currentCell.getX() * cellSize + scenePosition.x + (decoImg.offsetX * cellSize),
+				currentCell.getY() * cellSize + scenePosition.y + (decoImg.offsetY * cellSize),
 				decoSize,
 				decoSize
 			);
 			ctx.globalAlpha = 1;
+		}
 		}
 
 
