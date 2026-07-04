@@ -398,6 +398,7 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 			}
 
 			// now return true if a wall is blocking the path:
+			console.log("Stopped diagonal clipping (user tried to cheat)");
 			return /*false && */destinationCell.getWalls()[wallIndexToCheckOfDestination] === true;
 		});
 		// todo - explain this ^ with a diagram
@@ -451,9 +452,7 @@ function loadAssets() {
 	const totalAssets = functionsWhichLoadAssets.length;
 	for (let i = 0; i < totalAssets; i++) {
 		const assetLoadingFunc = functionsWhichLoadAssets[i];
-		console.log("Loading asset:", assetLoadingFunc, i);
 		assetLoadingFunc().then(res => {
-			console.log("Loaded asset:", assetLoadingFunc, i, res);
 			assetsLoaded += 1;
 			updateLoadingBar(assetsLoaded / totalAssets);
 		});
@@ -757,7 +756,7 @@ function findRadiusAroundPlayer(grid, playerX, playerY, cols, radius) {
 		const cellY = currentCell.getY();
 		const pythagSquareDistanceFromPlayer = (playerX - cellX) ** 2 + (playerY - cellY) ** 2;
 
-		if (pythagSquareDistanceFromPlayer > sqrRadius + 2) {
+		if (pythagSquareDistanceFromPlayer > sqrRadius + 4) {
 			continue;
 		}
 
